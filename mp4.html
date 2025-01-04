@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FF.XYZ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .player-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 600px;
+        }
+
+        .video-player {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .controls button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+
+        #progressBar {
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+
+        .playlist {
+            margin-top: 20px;
+        }
+
+        .playlist ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .playlist li {
+            cursor: pointer;
+            padding: 5px;
+            background: #e9ecef;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .playlist li:hover {
+            background: #d1d1d1;
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <video id="videoPlayer" class="video-player" controls>
+            <source src="video1.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="controls">
+            <button id="playPauseBtn">Play</button>
+            <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1">
+            <input type="range" id="progressBar" value="0" step="0.1">
+            <button id="fullscreenBtn">Fullscreen</button>
+        </div>
+        <div class="playlist">
+            <h3>Playlist</h3>
+            <ul id="playlist">
+                <li data-src="video1.mp4">Video 1</li>
+                <li data-src="video2.mp4">Video 2</li>
+                <li data-src="video3.mp4">Video 3</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        const videoPlayer = document.getElementById('videoPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const volumeControl = document.getElementById('volumeControl');
+        const progressBar = document.getElementById('progressBar');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const playlistItems = document.querySelectorAll('#playlist li');
+
+        let isPlaying = false;
+
+        // Play/Pause functionality
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                videoPlayer.pause();
+                playPauseBtn.textContent = 'Play';
+            } else {
+                videoPlayer.play();
+                playPauseBtn.textContent = 'Pause';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Volume control
+        volumeControl.addEventListener('input', (e) => {
+            videoPlayer.volume = e.target.value;
+        });
+
+        // Update progress bar
+        videoPlayer.addEventListener('timeupdate', () => {
+            const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+            progressBar.value = progress;
+        });
+
+        // Seek functionality
+        progressBar.addEventListener('input', (e) => {
+            const seekTime = (e.target.value / 100) * videoPlayer.duration;
+            videoPlayer.currentTime = seekTime;
+        });
+
+        // Fullscreen functionality
+        fullscreenBtn.addEventListener('click', () => {
+            if (videoPlayer.requestFullscreen) {
+                videoPlayer.requestFullscreen();
+            } else if (videoPlayer.webkitRequestFullscreen) { // Safari
+                videoPlayer.webkitRequestFullscreen();
+            } else if (videoPlayer.msRequestFullscreen) { // IE/Edge
+                videoPlayer.msRequestFullscreen();
+            }
+        });
+
+        // Playlist functionality
+        playlistItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const src = item.getAttribute('data-src');
+                videoPlayer.src = src;
+                videoPlayer.play();
+                playPauseBtn.textContent = 'Pause';
+                isPlaying = true;
+            });
+        });
+    </script>
+</body>
+</html>
